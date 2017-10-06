@@ -3,15 +3,15 @@ import { StackNavigator } from 'react-navigation';
 // import Details from '../components/details/details';
 import NearByPlace from '../components/nearByPlaces/nearByPlaces';
 import App from '../../App';
-// import Login from '../components/login/login';
-// import Signup from '../components/signup/signup';
-
+import Login from '../components/login/login';
+import Signup from '../components/signup/signup';
+// import PolyLine from '../components/Navigater'
 const Navigations = StackNavigator({
-    // locationDetails: { screen: Details },
+    // PolyLineScreen: { screen: PolyLine },
     NearByPlaceScreen: { screen: NearByPlace },
     HomeScreen: { screen: App },
-    // LoginScreen: { screen: Login },
-    // SignupScreen: { screen: Signup }
+    LoginScreen: { screen: Login },
+    SignupScreen: { screen: Signup }
 },
     {
         headerMode: 'screen',

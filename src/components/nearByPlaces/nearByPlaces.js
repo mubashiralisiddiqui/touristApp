@@ -12,31 +12,29 @@ class NearbyPlaces extends Component {
         this.state = {
             selectedIndex: 0,
             type: 'restaurant',
-            // textInputValue: ''
-            // textInputValue: 'restaurant'p
-
+            nearByplaces: []
         }
     }
-
+    static navigationOptions = {
+        title: 'Near By Places',
+        headerTitleStyle: {
+            color: 'white',
+            fontFamily: 'Courier New',
+            fontWeight: 'bold',
+            fontSize: 20,
+            justifyContent: 'space-between',
+            textAlign: 'center',
+        },
+        headerStyle: {
+            backgroundColor: '#2C3E50'
+        }
+    };
     getNearbyPlaces(selectedIndex) {
         let latlong = this.props.navigation.state.params
         console.log("=======", latlong.latitude, latlong.longitude)
         let typesArray = ['restaurant', 'park', 'bank', 'hospital'];
         let type = typesArray[selectedIndex];
         const apiKey = 'AIzaSyDoFwV1tzmS-NOL3LYrllrwhcefv--qGJs';
-        // AIzaSyCDmDjoJ3kSzqn5Lj15SH63Ky3hdOUc6VU
-        axios.get(url)
-            .then(
-            response => {
-                console.log('fetch nearby success', response);
-              
-            })
-
-            .catch(
-            error => {
-                console.log('fetch nearby error', error)
-               
-            })
         const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
         let lat = latlong.latitude;
         let lng = latlong.longitude;
@@ -44,18 +42,16 @@ class NearbyPlaces extends Component {
         let completeUrl = `${url}location=${lat},${lng}&radius=1000&type=${type}&key=${apiKey}`;
 
         console.log('url', completeUrl)
-        // this.props.fetch_data_nearby(completeUrl);
-        axios.get(url)
+        axios.get(completeUrl)
             .then(
             response => {
-                console.log('fetch nearby success', response.data);
-               
+                console.log('fetch nearby success', response.data.results);
+                let result = response.data.results
+                this.setState({ nearByplaces: result })
             })
-
             .catch(
             error => {
                 console.log('fetch nearby error', error)
-              
             })
     }
 
@@ -63,27 +59,33 @@ class NearbyPlaces extends Component {
         let latlong = this.props.navigation.state.params;
         this.getNearbyPlaces(0);
     }
-
-
-
     render() {
         console.log(this.props)
         const buttons = ['Restautrants', 'Parks', 'Banks', 'Hospitals']
         const { selectedIndex } = this.state
 
         return (
-            // <ScrollView>
             <View style={{ marginBottom: 20, paddingBottom: 40 }}>
-                <Text> this is places</Text>
-                {/* <ButtonGroup
-                        onPress={()=>this.getNearbyPlaces()}
-                        selectedIndex={selectedIndex}
-                        buttons={buttons}
-                        containerStyle={{ height: 50 }} /> */}
+                <ScrollView>
+                    {this.state.nearByplaces.map((d, i) => {
+                        console.log("map data", d)
+                        return (
+                            <ListItem
+                                key={i}
+                                roundAvatar
+                                title={d.name}
+                                subtitle={"Rating " + d.rating}
+                                avatar={{ uri: d.icon }}
+                            >
+
+                            </ListItem>
+                        )
+                    })}
+                </ScrollView>
+
 
 
             </View>
-            // </ScrollView>
         )
     }
 }
