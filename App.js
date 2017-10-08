@@ -70,8 +70,9 @@ export default class App extends React.Component {
   async getDirections(startLoc, destinationLoc) {
     console.log("getDirection==>",startLoc,destinationLoc)
     const key = 'AIzaSyACp-ZZT3Oxc8zltot-o2fU5PkSjda0Its'
-    // 'https://maps.googleapis.com/maps/api/directions/json?origin=24.9077065,67.0632784&destination=24.9077065,67.0632784&key=AIzaSyACp-ZZT3Oxc8zltot-o2fU5PkSjda0Its'
-    let url =`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${key}`;
+    //https://maps.googleapis.com/maps/api/directions/json?origin=24.882830499999997,67.0680423,&destination=24.882830499999997,67.0680423&key=AIzaSyACp-ZZT3Oxc8zltot-o2fU5PkSjda0Its
+    // 'https://maps.googleapis.com/maps/api/directions/json?origin=24.882830499999997,67.0680423&destination=24.882830499999997,67.0680423&key=AIzaSyACp-ZZT3Oxc8zltot-o2fU5PkSjda0Its'
+    let url =`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=AIzaSyACp-ZZT3Oxc8zltot-o2fU5PkSjda0Its`;
     console.log('url ready',url)
     try {
       let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${key}`)
@@ -79,11 +80,13 @@ export default class App extends React.Component {
       console.log("response",respJson)
       let points = Polyline.decode(respJson.routes[0].overview_polyline.points);
       let coords = points.map((point, index) => {
+        console.log('ponts==>',point)
         return {
           latitude: point[0],
           longitude: point[1]
         }
       })
+      console.log(coords)
       this.setState({ coords: coords })
       return coords
     } catch (error) {
@@ -111,7 +114,7 @@ export default class App extends React.Component {
           placeWebsite: place.website,
           isPlaceInfo: true
         })
-        this.getDirections(`${location.latitude},${location.longitude},`,`${this.state.latitude},${this.state.longitude}`)
+        this.getDirections(`${location.latitude},${location.longitude}` ,`${this.state.latitude},${this.state.longitude}`)
       })
       .catch((error) => console.log(error));
   }
@@ -123,12 +126,14 @@ export default class App extends React.Component {
         {console.log("lat lon==>", this.state.latitude, this.state.longitude)}
         <MapView
           style={styles.map}
-          region={{
+          initialRegion={{
             latitude: this.state.latitude,
             longitude: this.state.longitude,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
+            
           }}
+          
         >
           <MapView.Marker draggable
             coordinate={{
@@ -137,11 +142,10 @@ export default class App extends React.Component {
             }}
             onDragEnd={(e) => console.log('onDragEnd', e.nativeEvent)}
           />
-          <MapView.Polyline
-          
-            coordinates={this.state.coords}
-            strokeWidth={2}
-            strokeColor="red" />
+          <MapView.Polyline 
+          coordinates={this.state.coords}
+          strokeWidth={2}
+          strokeColor="red"/>
           {console.log("coordsss=>", this.state.coords)}
         </MapView>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>

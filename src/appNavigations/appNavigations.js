@@ -15,7 +15,7 @@ const Navigations = StackNavigator({
 },
     {
         headerMode: 'screen',
-        initialRouteName: 'HomeScreen'
+        initialRouteName: 'LoginScreen'
     }
 
 );
