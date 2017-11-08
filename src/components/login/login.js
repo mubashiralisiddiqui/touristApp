@@ -1,10 +1,16 @@
 import React from 'react';
-import { Image, View, Text, TextInput, ToastAndroid, TouchableHighlight, TouchableOpacity, AsyncStorage,ActivityIndicator } from 'react-native';
+import { Image, View, Text, TextInput, ToastAndroid, TouchableHighlight, TouchableOpacity, AsyncStorage, ActivityIndicator } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage, Button, Header } from 'react-native-elements';
 import firebase from 'firebase';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import style from './style';
+const location = {
+    latitude: 24.8841584,
+    longitude: 67.1379614,
+    latitudeDelta: 0.0002,
+    longitudeDelta: 0.0021,
+}
 export default class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -12,43 +18,46 @@ export default class Login extends React.Component {
             email: '',
             pasword: '',
             users: [],
-            isLogin:false
+            isLogin: false,
         };
     }
     static navigationOptions = {
         header: null
     }
-    componentDidMount() {
 
-    }
     login() {
         const { navigate } = this.props.navigation
         let obj = {
             email: this.state.email,
-            pasword: this.state.pasword
+            pasword: this.state.pasword,
         }
+
         firebase.auth()
             .signInWithEmailAndPassword(obj.email, obj.pasword)
             .then((user) => {
                 var userId = firebase.auth().currentUser.uid;
-                firebase.database().ref('users/' + userId).on('value', (data) => {
-                    var obj = data.val();
+                console.log( userId)
+                    firebase.database().ref('users/' + userId).on('value', (data) => {
+                        var obj = data.val();
+                        console.log('user', obj)
+                        this.setState({ isLogin: true })
+                    })
+                    navigate('HomeScreen');
+                    ToastAndroid.show('lOGIN SUCCESSFUL !', ToastAndroid.SHORT);
                 })
-                navigate('HomeScreen');
-                ToastAndroid.show('lOGIN SUCCESSFUL !', ToastAndroid.SHORT);
-            })
-            .catch((error) => {
-                var errorMessage = error.message;
-                alert(errorMessage);
+                .catch((error) => {
+                    var errorMessage = error.message;
+                    alert(errorMessage);
             });
     }
     render() {
         const { navigate } = this.props.navigation
         return (
             <KeyboardAwareScrollView contentContainerStyle={style.Container}>
+                {console.log("lat long", this.state.latitude, this.state.longitude)}
                 <Header
                     outerContainerStyles={{ backgroundColor: '#512DA8' }}
-                    centerComponent={{ text: 'Tourist App', style: { color: '#fff' } }}
+                    centerComponent={{ text: 'Family Tracker', style: { color: '#fff' } }}
                 />
                 <View style={style.InputField}>
                     <FormLabel>Email</FormLabel>

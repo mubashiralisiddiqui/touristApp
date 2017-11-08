@@ -33,92 +33,95 @@ export default class Signup extends React.Component {
 
 
     signup() {
-        const {navigate}=this.props.navigation
-        let nav = this.props.navigation.navigate
+        const { navigate } = this.props.navigation
         let obj = {
             name: this.state.username,
             lastName: this.state.lastName,
             email: this.state.email,
             pasword: this.state.pasword,
         }
-        firebase.auth().createUserWithEmailAndPassword(obj.email, obj.pasword)
-            .then((user) => {
-                let userDetails = {
-                    useremail: obj.email,
-                    name: obj.name
-                }
-                navigate('LoginScreen')
-                ToastAndroid.show('SIGNUP SUCCESSFUL !', ToastAndroid.SHORT);
-                var userId = firebase.auth().currentUser.uid;
-                firebase.database().ref('users/' + userId).set(userDetails)
-                firebase.database().ref('users/' + userId).on('value', (data) => {
-                    var obj = data.val();
-                })
-            })
-            .catch((error) => {
-                // var errorCode = error.code;
-                var errorMessage = error.message;
-                // var errorMessage = "The email address or password you entered is not valid";
-                alert(errorMessage);
-            });
+        // let id = firebase.auth().currentUser.uid;
+        // console.log("id==>", id)
+        firebase
+        .auth()
+        .createUserWithEmailAndPassword(obj.email, obj.pasword)
+        .then(user => {
+          var userId = firebase.auth().currentUser.uid;
+          let userDetails = {
+            userId: userId,
+            email: obj.email,
+            name: obj.name,
+          };
+  
+          firebase
+          .database()
+          .ref("users/" + userId)
+          .set(userDetails).then(()=>{
+            navigate("LoginScreen");
+            ToastAndroid.show("SIGNUP SUCCESSFUL !", ToastAndroid.SHORT);
+          }).catch((error)=>{
+              console.log("Error during user creating on firebase",error);
+          });
+  
+        });
     }
 
 
 
-render() {
-    const { navigate } = this.props.navigation
-    return (
+    render() {
+        const { navigate } = this.props.navigation
+        return (
 
-        <KeyboardAwareScrollView contentContainerStyle={style.Container}>
-        {/* //<View> */}
-            <Header
-                outerContainerStyles={{ backgroundColor: '#512DA8' }}
-                centerComponent={{
-                    text: 'Tourist Guide ',
-                    style: { color: '#fff' }
-                }}
-            />
-
-            <View style={style.InputField}>
-                <KeyboardAwareScrollView>
-                    <FormLabel>
-                        Name
-                    </FormLabel>
-                    <FormInput
-                        onChangeText={(username) => this.setState({ username })}
-                    />
-                    <FormLabel>
-                        Email
-                    </FormLabel>
-                    <FormInput
-
-                        onChangeText={(email) => this.setState({ email })}
-                    />
-                    <FormLabel>
-                        PASSWORD
-                    </FormLabel>
-                    <FormInput
-                        onChangeText={(pasword) => this.setState({ pasword })}
-                    />
-                </KeyboardAwareScrollView>
-
-                <Button
-                    onPress={() => this.signup()}
-                    title='SIGNUP'
-                    buttonStyle={{ backgroundColor: '#512DA8' }}
+            <KeyboardAwareScrollView contentContainerStyle={style.Container}>
+                {/* //<View> */}
+                <Header
+                    outerContainerStyles={{ backgroundColor: '#512DA8' }}
+                    centerComponent={{
+                        text: 'Tourist Guide ',
+                        style: { color: '#fff' }
+                    }}
                 />
-            </View>
 
-            <TouchableOpacity onPress={() => navigate('LoginScreen')} style={style.askForAccount} >
-                <Text style={{ fontSize: 16 }}>
-                    Already Have An Account ?
+                <View style={style.InputField}>
+                    <KeyboardAwareScrollView>
+                        <FormLabel>
+                            Name
+                    </FormLabel>
+                        <FormInput
+                            onChangeText={(username) => this.setState({ username })}
+                        />
+                        <FormLabel>
+                            Email
+                    </FormLabel>
+                        <FormInput
+
+                            onChangeText={(email) => this.setState({ email })}
+                        />
+                        <FormLabel>
+                            PASSWORD
+                    </FormLabel>
+                        <FormInput
+                            onChangeText={(pasword) => this.setState({ pasword })}
+                        />
+                    </KeyboardAwareScrollView>
+
+                    <Button
+                        onPress={() => this.signup()}
+                        title='SIGNUP'
+                        buttonStyle={{ backgroundColor: '#512DA8' }}
+                    />
+                </View>
+
+                <TouchableOpacity onPress={() => navigate('LoginScreen')} style={style.askForAccount} >
+                    <Text style={{ fontSize: 16 }}>
+                        Already Have An Account ?
                         <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 16 }}>
-                        Login !
+                            Login !
                         </Text>
-                </Text>
-            </TouchableOpacity>
-{/* </View> */}
-        </KeyboardAwareScrollView >
-    )
-}
+                    </Text>
+                </TouchableOpacity>
+                {/* </View> */}
+            </KeyboardAwareScrollView >
+        )
+    }
 }
